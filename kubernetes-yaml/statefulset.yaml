@@ -25,7 +25,7 @@ spec:
             topologyKey: kubernetes.io/hostname
       containers:
       - name: consul
-        image: 172.16.101.70/dbcluster-compose/consul-k81:test
+        image: 172.16.101.70/dbcluster-compose/consul-k8s:test
         securityContext:
           privileged: true
         ports:
