@@ -1,0 +1,3 @@
+echo $HISTCONTROL
+
+echo ${HISTCONTROL}

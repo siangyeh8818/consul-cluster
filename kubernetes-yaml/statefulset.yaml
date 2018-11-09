@@ -1,0 +1,86 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: consul
+spec:
+  serviceName: "consul"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: consul
+      annotations:
+        pod.alpha.kubernetes.io/initialized: "true"
+    spec:
+      # soft antiaffinity for optimize placement
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - consul
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - name: consul
+        image: 180.169.210.141:9999/dbcluster-compose/consul-k81:test
+        securityContext:
+          privileged: true
+        ports:
+          - containerPort: 8500
+            name: http
+          - containerPort: 8300
+            name: server_rpc
+          - containerPort: 8301
+            name: server_rpc_2
+          - containerPort: 8600
+            name: dns
+          - containerPort: 8400
+            name: rpc
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: hosttime
+      volumes:
+       - name: hosttime
+         hostPath:
+           path: /etc/localtime 
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul
+  labels:
+    app: consul
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8500
+  selector:
+    app: consul-cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-discovery
+  labels:
+    app: consul-discovery
+spec:
+  ports:
+  - name: transport
+    port: 8600
+  clusterIP: None
+  selector:
+    app: consul-cluster
