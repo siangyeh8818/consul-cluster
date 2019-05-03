@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: consul-cluster
 spec:
-  serviceName: "consul-discovery"
+  serviceName: "consul-cluster"
   replicas: 3
   template:
     metadata:
@@ -24,9 +24,8 @@ spec:
                   - consul-cluster
             topologyKey: kubernetes.io/hostname
       containers:
-      - name: consul-cluster
+      - name: consul
         image: siangyeh8818/consul-cluster:1.3.1
-        imagePullPolicy: Always
         securityContext:
           privileged: true
         ports:
@@ -56,7 +55,6 @@ spec:
        - name: hosttime
          hostPath:
            path: /etc/localtime 
-
 ---
 apiVersion: v1
 kind: Service
@@ -80,9 +78,8 @@ metadata:
     app: consul-discovery
 spec:
   ports:
-  - name: server-rpc-2
-    port: 8301
-    targetPort: 8301
+  - name: server-rpc
+    port: 8300
   clusterIP: None
   selector:
     app: consul-cluster
