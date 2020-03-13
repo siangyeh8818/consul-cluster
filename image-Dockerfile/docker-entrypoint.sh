@@ -10,5 +10,5 @@ then
 else
   echo $MY_POD_NAME
   echo "./consul agent -server -join consul-cluster-0.consul-discovery.default.svc.cluster.local:8301 -ui  -disable-host-node-id -client 0.0.0.0 -data-dir=/opt/consul/data"
-  ./consul agent -server -join consul-cluster-0.consul-discovery.default.svc.cluster.local:8301 -ui  -disable-host-node-id -client 0.0.0.0 -data-dir=/opt/consul/data
+  ./consul agent -server -join consul-cluster-0.consul-discovery.${MY_POD_NAMESPACE}.svc.cluster.local:8301 -ui  -disable-host-node-id -client 0.0.0.0 -data-dir=/opt/consul/data
 fi 
