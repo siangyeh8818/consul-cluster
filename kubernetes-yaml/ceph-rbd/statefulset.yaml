@@ -51,10 +51,27 @@ spec:
         volumeMounts:
         - mountPath: /etc/localtime
           name: hosttime
+        - mountPath: /opt/consul
+          name: prometheus-k8s-db
+          subPath: prometheus-db
       volumes:
        - name: hosttime
          hostPath:
-           path: /etc/localtime 
+           path: /etc/localtime
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      creationTimestamp: null
+      name: prometheus-k8s-db
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      dataSource: null
+      resources:
+        requests:
+          storage: 200Gi
+      storageClassName: rook-ceph-block
 ---
 apiVersion: v1
 kind: Service
